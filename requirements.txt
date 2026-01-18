@@ -1,2 +1,3 @@
 fastapi[standard]
 fastapi[all]
+scalar_fastapi
