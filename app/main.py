@@ -68,6 +68,11 @@ def get_shipment(id: int | None = None) -> dict[str, Any]:
 
 @app.post('/shipment')
 def submit_shipment(content: str, weight: float) -> dict[str, Any]:
+    if weight > 25.0:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Weight more than 25 kgs are not allowed"
+        )
     new_id = max(shipments.keys()) + 1
     shipments[new_id] = {
         "content" : content,
@@ -76,6 +81,22 @@ def submit_shipment(content: str, weight: float) -> dict[str, Any]:
     }
     
     return shipments[new_id]
+
+### Update fields of a shipment
+@app.patch("/shipment")
+def update_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
+    # Update data with given fields
+    shipments[id].update(body)
+    return shipments[id]
+
+
+### Delete a shipment by id
+@app.delete("/shipment")
+def delete_shipment(id: int) -> dict[str, str]:
+    # Remove from datastore
+    shipments.pop(id)
+
+    return {"detail": f"Shipment with id #{id} is deleted!"}
     
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
