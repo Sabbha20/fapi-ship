@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from typing import Any
 from scalar_fastapi import get_scalar_api_reference
 
@@ -58,10 +58,11 @@ def get_shipment(id: int | None = None) -> dict[str, Any]:
         id = max(shipments.keys())
     
     if id not in shipments:
-        return {
-            'msg': 'Shipment id not found',
-            'status': 'NOT_FOUND'
-        }
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Shipment id not found',
+            
+        )
     
     return shipments[id]
     
