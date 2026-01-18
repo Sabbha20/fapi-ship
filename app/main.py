@@ -65,6 +65,17 @@ def get_shipment(id: int | None = None) -> dict[str, Any]:
         )
     
     return shipments[id]
+
+@app.post('/shipment')
+def submit_shipment(content: str, weight: float) -> dict[str, Any]:
+    new_id = max(shipments.keys()) + 1
+    shipments[new_id] = {
+        "content" : content,
+        "weight": weight,
+        "status": "placed"
+    }
+    
+    return shipments[new_id]
     
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
