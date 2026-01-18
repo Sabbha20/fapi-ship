@@ -1,14 +1,69 @@
 from fastapi import FastAPI
+from typing import Any
 from scalar_fastapi import get_scalar_api_reference
 
 app = FastAPI()
 
-@app.get("/shipment")
-def shipment():
-    return {
-        "content": "wooden table",
+shipments = {
+    12701: {
+        "weight": .6,
+        "content": "glassware",
+        "status": "placed"
+    },
+    12702: {
+        "weight": 2.3,
+        "content": "books",
+        "status": "shipped"
+    },
+    12703: {
+        "weight": 1.1,
+        "content": "electronics",
+        "status": "delivered"
+    },
+    12704: {
+        "weight": 3.5,
+        "content": "furniture",
         "status": "in transit"
-    }
+    },
+    12705: {
+        "weight": .9,
+        "content": "clothing",
+        "status": "returned"
+    },
+    12706: {
+        "weight": 4.0,
+        "content": "appliances",
+        "status": "processing"
+    },
+    12707: {
+        "weight": 1.8,
+        "content": "toys",
+        "status": "placed"
+    },
+}
+
+
+@app.get("/shipment/latest")
+def get_latest_shipment() -> dict[str, Any]:
+    
+    id = max(shipments.keys())
+    
+    return shipments[id]
+
+
+@app.get("/shipment")
+def get_shipment(id: int | None = None) -> dict[str, Any]:
+    
+    if not id:
+        id = max(shipments.keys())
+    
+    if id not in shipments:
+        return {
+            'msg': 'Shipment id not found',
+            'status': 'NOT_FOUND'
+        }
+    
+    return shipments[id]
     
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
